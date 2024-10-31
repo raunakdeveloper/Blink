@@ -4,10 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shortened URL</title>
+    <style>
+        .container {
+            padding: 50px;
+        }
+        #copyButton {
+            margin-left: 10px;
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+        
+        /* Toast styles */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px; /* Center the toast */
+            background-color: #00000027;
+            color: #000000;
+            text-align: center;
+            border-radius: 10px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            top: 20px; /* Position from the top */
+            font-size: 14px;
+            transition: visibility 0s, opacity 0.5s linear;
+            opacity: 0; /* Start hidden */
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1; /* Show opacity */
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {top: 0; opacity: 0;} 
+            to {top: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {top: 30px; opacity: 1;} 
+            to {top: 0; opacity: 0;}
+        }
+    </style>
+    <script>
+        function copyToClipboard() {
+            const url = document.getElementById('short-url');
+            navigator.clipboard.writeText(url.innerText)
+                .then(() => {
+                    showToast('URL copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'show';
+            setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
+        }
+    </script>
 </head>
 <body>
-    <h1>Your Shortened URL</h1>
-    <p><a href="{{ short_url }}">{{ short_url }}</a></p>
-    <p>Use the link above to access your original URL.</p>
+    <div class="container">
+        <h1>Your Shortened URL</h1>
+        <p>
+            <span id="short-url"><a href="{{ short_url }}" target="_blank">{{ short_url }}</a></span>
+            <div class="btn">
+                <button class="submit-btn" id="copyButton" onclick="copyToClipboard()">Copy</button>
+            </div>
+            
+        </p>
+        <p>Use the link above to access your original URL.</p>
+    </div>
+    
+
+    <!-- Toast notification -->
+    <div id="toast"></div>
 </body>
 </html>
