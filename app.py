@@ -1,10 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for
-import hashlib
+from flask import Flask, render_template, request, redirect
+import random
+import string
 
 app = Flask(__name__)
 
 # In-memory storage for shortened URLs
 url_mapping = {}
+
+# Function to generate a random 4-character string
+def generate_random_string(length=4):
+    characters = string.ascii_letters  # Contains both lowercase and uppercase letters
+    return ''.join(random.choice(characters) for _ in range(length))
 
 # Root route to display the form
 @app.route('/')
@@ -16,12 +22,12 @@ def index():
 def shorten_url():
     original_url = request.form['url']
     
-    # Generate a short hash for the URL
-    short_hash = hashlib.md5(original_url.encode()).hexdigest()[:6]
-    short_url = request.host_url + short_hash
+    # Generate a random 4-character string for the URL
+    random_string = generate_random_string()
+    short_url = request.host_url + random_string
     
     # Store the mapping
-    url_mapping[short_hash] = original_url
+    url_mapping[random_string] = original_url
     
     return render_template('shortened.html', short_url=short_url)
 
